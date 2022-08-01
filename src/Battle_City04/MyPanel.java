@@ -82,14 +82,9 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         drawTank(my_tank.getX(), my_tank.getY(), g, my_tank.getDirection(), 1);
 
         //  画出 my_tank 射击的子弹 (多颗) --- 子弹集合
-        for (int i = 0; i < my_tank.shots.size(); i++) {
-            Shot shot = my_tank.shots.get(i);
-            if (shot != null && shot.isLive == true) {
+            if (my_tank.shot!= null && my_tank.shot.isLive == true) {
                 System.out.println("子弹被绘制");
-                g.draw3DRect(shot.x, shot.y, 2, 2, false);
-            }else { //  如果该 shot 对象已经无效，就从shots 集合中拿掉
-                my_tank.shots.remove(shot);
-            }
+                g.draw3DRect(my_tank.shot.x, my_tank.shot.y, 2, 2, false);
         }
 
         //  如果 bombs 集合中有对象，就画出
@@ -262,15 +257,15 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
         //  如果用户按下的是 J，就发射
         if (e.getKeyCode() == KeyEvent.VK_J) {
-//            //  子弹的初始化 || 判断 my_tank的子弹是否被销毁（被销毁了才能发射新的的子弹）
-//            if (my_tank.shot == null || !(my_tank.shot.isLive)){
-//                my_tank.shotEnemyTank();
-//            }  ---> 单个子弹的情形
-
-            //  现在写的是连发的情景
-            if (my_tank.shots.size() < 5) {
+            //  子弹的初始化 || 判断 my_tank的子弹是否被销毁（被销毁了才能发射新的的子弹）
+            if (my_tank.shot == null || !(my_tank.shot.isLive)){
                 my_tank.shotEnemyTank();
-            }
+            }  // 单个子弹的情形
+
+//            //  现在写的是连发的情景
+//            if (my_tank.shots.size() < 5) {
+//                my_tank.shotEnemyTank();
+//            }
         }
 
         //  让面板重绘
@@ -292,15 +287,12 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             }
 
             //  判断是否击中了敌人
-            for (int i = 0; i < my_tank.shots.size(); i++) {
-                Shot shot = my_tank.shots.get(i);
-                if (shot!= null && shot.isLive == true) {  //  当我的子弹还存活
+                if (my_tank.shot!= null && my_tank.shot.isLive == true) {  //  当我的子弹还存活
                     //  遍历敌人所有的坦克
                     for (int j = 0; j < enemyTanks.size(); j++) {
-                        hitTank(shot, enemyTanks.get(j));
+                        hitTank(my_tank.shot, enemyTanks.get(j));
                     }
                 }
-            }
 
             this.repaint();
         }

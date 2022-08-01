@@ -11,7 +11,7 @@ import java.util.Vector;
 public class My_tank extends Tank {
     //  定义一个 shot 对象，表示一个射击（线程）
     Shot shot = null;
-    Vector<Shot> shots = new Vector<>();    //  设置一个弹夹来存放子弹
+//    Vector<Shot> shots = new Vector<>();    //  设置一个弹夹来存放子弹
 
     public My_tank(int x, int y) {
         super(x, y);
@@ -36,7 +36,7 @@ public class My_tank extends Tank {
         }
 
         //  把新建的 shot 放入到集合 shots 集合中
-        shots.add(shot);
+//        shots.add(shot);
 
         //  启动我们的 Shot 线程
         new Thread(shot).start();
