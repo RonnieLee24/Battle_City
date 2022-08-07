@@ -12,6 +12,8 @@ public class My_tank extends Tank {
     //  定义一个 shot 对象，表示一个射击（线程）
     Shot shot = null;
 //    Vector<Shot> shots = new Vector<>();    //  设置一个弹夹来存放子弹
+    //  定义一个变量表示 我方坦克是否存活
+    boolean isLive = true;
 
     public My_tank(int x, int y) {
         super(x, y);

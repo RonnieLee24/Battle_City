@@ -35,7 +35,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     Image image2 = null;
     Image image3 = null;
 
-    public MyPanel(){
+    public MyPanel() {
         my_tank = new My_tank(100, 100);    //  初始化自己的坦克
         my_tank.setSpeed(7);
 
@@ -78,13 +78,15 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         super.paint(g);
         g.fillRect(0, 0, 1000, 750);    //  填充矩形，默认黑色
 
-        //  画出坦克 -- 封装方法
-        drawTank(my_tank.getX(), my_tank.getY(), g, my_tank.getDirection(), 1);
+        //  画出坦克 -- 封装方法（止于瓯当坦克存活的时候，才会画出坦克）
+        if (my_tank.isLive) {
+            drawTank(my_tank.getX(), my_tank.getY(), g, my_tank.getDirection(), 1);
+        }
 
         //  画出 my_tank 射击的子弹 (多颗) --- 子弹集合
-            if (my_tank.shot!= null && my_tank.shot.isLive == true) {
-                System.out.println("子弹被绘制");
-                g.draw3DRect(my_tank.shot.x, my_tank.shot.y, 2, 2, false);
+        if (my_tank.shot != null && my_tank.shot.isLive == true) {
+            System.out.println("子弹被绘制");
+            g.draw3DRect(my_tank.shot.x, my_tank.shot.y, 2, 2, false);
         }
 
         //  如果 bombs 集合中有对象，就画出
@@ -133,18 +135,17 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     }
 
     /**
-     *
-     * @param x 坦克的左上角 x 坐标
-     * @param y 坦克的左上角 y 坐标
-     * @param g 画笔
+     * @param x         坦克的左上角 x 坐标
+     * @param y         坦克的左上角 y 坐标
+     * @param g         画笔
      * @param direction 坦克方向（上下左右）
-     * @param type  坦克类型
+     * @param type      坦克类型
      */
     //  编写方法，画出坦克
     public void drawTank(int x, int y, Graphics g, int direction, int type) {
 
         //  根据不同类型坦克，设置不同颜色
-        switch (type){
+        switch (type) {
             case 0: //  敌人的坦克
                 g.setColor(Color.cyan);
                 break;
@@ -155,7 +156,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
         //  根据坦克方向，来绘制坦克
         //  direct 表示方向（0, 1, 2, 3）
-        switch (direction){
+        switch (direction) {
             case 0: //  表示向上
                 g.fill3DRect(x, y, 10, 60, false);  //  画出坦克左边的轮子
                 g.fill3DRect(x + 10, y + 10, 20, 40, false);  //  画出坦克中间的矩形
@@ -192,12 +193,12 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     //  编写方法，判断我方的子弹是否击中敌人坦克
     public void hitTank(Shot s, EnemyTank enemyTank) {
         //  判断 s 击中坦克
-        switch (enemyTank.getDirection()){
+        switch (enemyTank.getDirection()) {
             case 0: // 坦克 方向为 上和下 时，坦克的区域是一样的，只是炮筒的方向不一样
             case 2:
                 if ((s.x > enemyTank.getX() && s.x < enemyTank.getX() + 40
-                    && s.y >= enemyTank.getY() && s.y <= enemyTank.getY() + 60)){
-                    s.isLive =false;    //  其中后，子弹就失去意义了
+                        && s.y >= enemyTank.getY() && s.y <= enemyTank.getY() + 60)) {
+                    s.isLive = false;    //  其中后，子弹就失去意义了
                     enemyTank.isLive = false;   //  同样，敌军坦克也会挂掉
                     //  创建 Bomb 对象，并加入到 bombs 集合
                     Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
@@ -206,11 +207,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
                 }
                 break;
-            case  1: // 坦克 右
-            case  4: // 坦克 左
+            case 1: // 坦克 右
+            case 4: // 坦克 左
                 if ((s.x > enemyTank.getX() && s.x < enemyTank.getX() + 60
-                        && s.y >= enemyTank.getY() && s.y <= enemyTank.getY() + 40)){
-                    s.isLive =false;    //  击中后，子弹就失去意义了
+                        && s.y >= enemyTank.getY() && s.y <= enemyTank.getY() + 40)) {
+                    s.isLive = false;    //  击中后，子弹就失去意义了
                     enemyTank.isLive = false;
 
                     //  创建 Bomb 对象，并加入到 bombs 集合
@@ -222,6 +223,36 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         }
     }
 
+    //  编写方法，判断敌军的子弹是否击中我方坦克
+    public void hitMyHeart(Shot s, My_tank my_tank) {
+        //  判断 s 击中坦克
+        switch (my_tank.getDirection()) {
+            case 0: // 坦克 方向为 上和下 时，坦克的区域是一样的，只是炮筒的方向不一样
+            case 2:
+                if ((s.x > my_tank.getX() && s.x < my_tank.getX() + 40
+                        && s.y >= my_tank.getY() && s.y <= my_tank.getY() + 60)) {
+                    s.isLive = false;    //  其中后，子弹就失去意义了
+                    my_tank.isLive = false;   //  同样，敌军坦克也会挂掉
+                    //  创建 Bomb 对象，并加入到 bombs 集合
+                    Bomb bomb = new Bomb(my_tank.getX(), my_tank.getY());
+                    bombs.add(bomb);
+                }
+                break;
+            case 1: // 坦克 右
+            case 4: // 坦克 左
+                if ((s.x > my_tank.getX() && s.x < my_tank.getX() + 60
+                        && s.y >= my_tank.getY() && s.y <= my_tank.getY() + 40)) {
+                    s.isLive = false;    //  击中后，子弹就失去意义了
+                    my_tank.isLive = false;
+                    //  创建 Bomb 对象，并加入到 bombs 集合
+                    Bomb bomb = new Bomb(my_tank.getX(), my_tank.getY());
+                    bombs.add(bomb);
+                }
+                break;
+        }
+    }
+
+
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -231,24 +262,24 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     //  处理wdsa 键按下的情况
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_W){   //  按下 W 键
+        if (e.getKeyCode() == KeyEvent.VK_W) {   //  按下 W 键
             //  改变坦克的方向
             my_tank.setDirection(0);
             //  修改坦克的坐标 y -= 1
-            if(my_tank.getY() > 0) {
+            if (my_tank.getY() > 0) {
                 my_tank.moveUp();
             }
-        }else if(e.getKeyCode() == KeyEvent.VK_D){  //  按下 D 键
+        } else if (e.getKeyCode() == KeyEvent.VK_D) {  //  按下 D 键
             my_tank.setDirection(1);
             if ((my_tank.getX() + 60) < 1000) {
                 my_tank.moveRight();
             }
-        }else if (e.getKeyCode() == KeyEvent.VK_S){ //  按下 S 键
+        } else if (e.getKeyCode() == KeyEvent.VK_S) { //  按下 S 键
             my_tank.setDirection(2);
             if ((my_tank.getY() + 60) < 750) {
                 my_tank.moveDown();
             }
-        }else if (e.getKeyCode() == KeyEvent.VK_A){
+        } else if (e.getKeyCode() == KeyEvent.VK_A) {
             my_tank.setDirection(3);
             if (my_tank.getX() > 0) {
                 my_tank.moveLeft();
@@ -258,7 +289,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         //  如果用户按下的是 J，就发射
         if (e.getKeyCode() == KeyEvent.VK_J) {
             //  子弹的初始化 || 判断 my_tank的子弹是否被销毁（被销毁了才能发射新的的子弹）
-            if (my_tank.shot == null || !(my_tank.shot.isLive)){
+            if (my_tank.shot == null || !(my_tank.shot.isLive)) {
                 my_tank.shotEnemyTank();
             }  // 单个子弹的情形
 
@@ -287,14 +318,35 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             }
 
             //  判断是否击中了敌人
-                if (my_tank.shot!= null && my_tank.shot.isLive == true) {  //  当我的子弹还存活
-                    //  遍历敌人所有的坦克
-                    for (int j = 0; j < enemyTanks.size(); j++) {
-                        hitTank(my_tank.shot, enemyTanks.get(j));
+            if (my_tank.shot != null && my_tank.shot.isLive == true) {  //  当我的子弹还存活
+                //  遍历敌人所有的坦克
+                for (int j = 0; j < enemyTanks.size(); j++) {
+                    hitTank(my_tank.shot, enemyTanks.get(j));
+                }
+            }
+
+            //  判断自己是否被击中
+            for (int i = 0; i < enemyTanks.size(); i++) {   //  因为坦克有可能被销毁的，所以要用 enemyTanks.size()
+                //  从Vector 取出坦克
+                EnemyTank enemyTank = enemyTanks.get(i);
+                //  判断当前敌人坦克是否还存活
+                if (enemyTank.isLive && my_tank.isLive) { //  只有当敌人的坦克是活的，才去画图！！！
+                    //  画出enemyTank 所有子弹
+                    for (int j = 0; j < enemyTank.shots.size(); j++) {
+                        //  取出子弹
+                        Shot shot = enemyTank.shots.get(j);
+                        //  绘制
+                        hitMyHeart(shot, my_tank);
+
                     }
                 }
+
+            }
+
 
             this.repaint();
         }
     }
 }
+
+
