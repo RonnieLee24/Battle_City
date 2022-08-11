@@ -63,6 +63,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             new Thread(shot).start();   //  执行 run() 方法
             //  1）子弹移动 2）触碰边界和射到敌军坦克时，结束线程
 
+            enemyTank.setEnemyTanks(enemyTanks); // *** 将 enemyTanks 设置给 enemyTank *** //
             //  加入
             enemyTanks.add(enemyTank);
         }
