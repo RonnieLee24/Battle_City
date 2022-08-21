@@ -5,6 +5,7 @@ import javax.swing.plaf.multi.MultiButtonUI;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.Reader;
 import java.rmi.Remote;
 import java.util.Vector;
 
@@ -64,6 +65,8 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             //  1）子弹移动 2）触碰边界和射到敌军坦克时，结束线程
 
             enemyTank.setEnemyTanks(enemyTanks); // *** 将 enemyTanks 设置给 enemyTank *** //
+
+            Recorder.setEnemyTanks(enemyTanks);  // *** 将 enemyTanks 设置给 Recorder 的 enemyTank *** //
             //  加入
             enemyTanks.add(enemyTank);
         }
@@ -74,10 +77,25 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         image3 = Toolkit.getDefaultToolkit().getImage(MyPanel.class.getResource("/bomb_3.gif"));
     }
 
+    //  编写方法，显示我方击毁敌方坦克的信息
+    public void showInfo(Graphics g) {  //  因为要画图，所以我们需要画笔 g 这个参数
+
+        //  画出玩家的总成绩
+        g.setColor(Color.black);
+        Font font = new Font("宋体", Font.BOLD, 25);
+        g.setFont(font);
+        g.drawString("您累积击毁敌方坦克", 1020, 30);
+        drawTank(1020, 60, g, 0, 0);    //  画出一个敌方坦克（注意: drawTank方法将画笔置为了蓝色）
+        g.setColor(Color.black);
+        g.drawString(Recorder.getAllEnemyTankNum() + "" , 1080, 100);
+
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         g.fillRect(0, 0, 1000, 750);    //  填充矩形，默认黑色
+        showInfo(g);
 
         //  画出坦克 -- 封装方法（止于瓯当坦克存活的时候，才会画出坦克）
         if (my_tank.isLive) {
@@ -206,6 +224,10 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                     bombs.add(bomb);
                     enemyTanks.remove(enemyTank);
 
+                    //  当我方击毁一个敌人坦克时，就对数据 allEnemyTankNum++
+                    Recorder.addAllEnemyTankNum();
+
+
                 }
                 break;
             case 1: // 坦克 右
@@ -219,6 +241,8 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                     Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
                     bombs.add(bomb);
                     enemyTanks.remove(enemyTank);
+
+                    Recorder.addAllEnemyTankNum();
                 }
                 break;
         }
@@ -343,7 +367,6 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                 }
 
             }
-
 
             this.repaint();
         }
