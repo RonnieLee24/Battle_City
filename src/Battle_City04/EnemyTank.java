@@ -23,6 +23,8 @@ public class EnemyTank extends Tank implements Runnable{
         super(x, y);
     }
 
+
+
     //  这里提供一个方法，可以将 MyPanel 的成员 Vector<EnemyTank> enemyTanks = new Vector<>();
     //  设置到 EnemyTank类 的成员 enemyTanks
     public void setEnemyTanks(Vector<EnemyTank> enemyTanks) {

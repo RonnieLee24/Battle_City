@@ -27,6 +27,9 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     //  定义敌人坦克，放入到 Vector中
     Vector<EnemyTank> enemyTanks = new Vector<>();
 
+    //  定义一个存放 Node 对象的 Vector，用于恢复敌人坦克的坐标和方向
+    Vector<Node> nodes = new Vector<>();
+
     //  定义一个Vector，用于存放炸弹 [泛型 和 集合的使用]
     Vector<Bomb> bombs = new Vector<>();
     //  当子弹击中坦克时，加入一个 Bomb 对象到 bombs
@@ -36,39 +39,86 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     Image image2 = null;
     Image image3 = null;
 
-    public MyPanel() {
+    public MyPanel(String key) {
+        //  在 MyPanel 中，游戏一启动，我们就进行数据的恢复
+        if (key.equals("2")) {
+            nodes = Recorder.getNodesAndEnemyTankNumRec();
+        }
+
         my_tank = new My_tank(100, 100);    //  初始化自己的坦克
         my_tank.setSpeed(7);
 
         int enemyTankSize = 3;
-        //  初始化敌人的坦克
-        for (int i = 0; i < enemyTankSize; i++) {
-            EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
-            //  设置方向
-            enemyTank.setDirection(2);
-            //  设置速度
-            enemyTank.setSpeed(1);
-            //  启动敌人坦克线程，让它动起来
-            new Thread(enemyTank).start();  //  执行 run（） 方法：1）自由移动 2）被击中后消失（myTank调用 shotEnemyTank()方法创建
-            //  相应子弹对象，
-            //  然后在 MyPanel线程中调用 hitTank() 方法判断 如果敌方坦克被击中的话，aLive == false[Over]
-            //  MyPanel() 线程的第二个作用：this.repaint() 一直重绘，保持图像的更新
-            //  MyPanel线程在 TankGame04 中启动
+
+        switch (key) {
+            case "1":
+                //  初始化敌人的坦克
+                for (int i = 0; i < enemyTankSize; i++) {
+                    EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
+                    //  设置方向
+                    enemyTank.setDirection(2);
+                    //  设置速度
+                    enemyTank.setSpeed(1);
+                    //  启动敌人坦克线程，让它动起来
+                    new Thread(enemyTank).start();  //  执行 run（） 方法：1）自由移动 2）被击中后消失（myTank调用 shotEnemyTank()方法创建
+                    //  相应子弹对象，
+                    //  然后在 MyPanel线程中调用 hitTank() 方法判断 如果敌方坦克被击中的话，aLive == false[Over]
+                    //  MyPanel() 线程的第二个作用：this.repaint() 一直重绘，保持图像的更新
+                    //  MyPanel线程在 TankGame04 中启动
 
 
-            //  给该  enemyTank 加入一颗子弹
-            Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirection());
-            //  加入 enemyTank的 Vector 成员
-            enemyTank.shots.add(shot);
-            //  启动 shot 对象
-            new Thread(shot).start();   //  执行 run() 方法
-            //  1）子弹移动 2）触碰边界和射到敌军坦克时，结束线程
+                    //  给该  enemyTank 加入一颗子弹
+                    Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirection());
+                    //  加入 enemyTank的 Vector 成员
+                    enemyTank.shots.add(shot);
+                    //  启动 shot 对象
+                    new Thread(shot).start();   //  执行 run() 方法
+                    //  1）子弹移动 2）触碰边界和射到敌军坦克时，结束线程
 
-            enemyTank.setEnemyTanks(enemyTanks); // *** 将 enemyTanks 设置给 enemyTank *** //
+                    enemyTank.setEnemyTanks(enemyTanks); // *** 将 enemyTanks 设置给 enemyTank *** //
 
-            Recorder.setEnemyTanks(enemyTanks);  // *** 将 enemyTanks 设置给 Recorder 的 enemyTank *** //
-            //  加入
-            enemyTanks.add(enemyTank);
+                    Recorder.setEnemyTanks(enemyTanks);  // *** 将 enemyTanks 设置给 Recorder 的 enemyTank *** //
+                    //  加入
+                    enemyTanks.add(enemyTank);
+                }
+
+                break;
+            case "2": //  继续上局游戏
+
+                //  初始化敌人的坦克
+                for (int i = 0; i < nodes.size(); i++) {
+                    Node node = nodes.get(i);
+                    EnemyTank enemyTank = new EnemyTank(node.getX(), node.getY());
+                    //  设置方向
+                    enemyTank.setDirection(node.getDirect());
+                    //  设置速度
+                    enemyTank.setSpeed(1);
+                    //  启动敌人坦克线程，让它动起来
+                    new Thread(enemyTank).start();  //  执行 run（） 方法：1）自由移动 2）被击中后消失（myTank调用 shotEnemyTank()方法创建
+                    //  相应子弹对象，
+                    //  然后在 MyPanel线程中调用 hitTank() 方法判断 如果敌方坦克被击中的话，aLive == false[Over]
+                    //  MyPanel() 线程的第二个作用：this.repaint() 一直重绘，保持图像的更新
+                    //  MyPanel线程在 TankGame04 中启动
+
+
+                    //  给该  enemyTank 加入一颗子弹
+                    Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirection());
+                    //  加入 enemyTank的 Vector 成员
+                    enemyTank.shots.add(shot);
+                    //  启动 shot 对象
+                    new Thread(shot).start();   //  执行 run() 方法
+                    //  1）子弹移动 2）触碰边界和射到敌军坦克时，结束线程
+
+                    enemyTank.setEnemyTanks(enemyTanks); // *** 将 enemyTanks 设置给 enemyTank *** //
+
+                    Recorder.setEnemyTanks(enemyTanks);  // *** 将 enemyTanks 设置给 Recorder 的 enemyTank *** //
+                    //  加入
+                    enemyTanks.add(enemyTank);
+                }
+                break;
+
+            default:
+                System.out.println("你的输入有误，请输入1或者2");
         }
 
         //  初始化图片对象
