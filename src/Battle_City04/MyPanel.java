@@ -5,6 +5,7 @@ import javax.swing.plaf.multi.MultiButtonUI;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.Reader;
 import java.rmi.Remote;
 import java.util.Vector;
@@ -41,8 +42,17 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
     public MyPanel(String key) {
         //  在 MyPanel 中，游戏一启动，我们就进行数据的恢复
-        if (key.equals("2")) {
-            nodes = Recorder.getNodesAndEnemyTankNumRec();
+
+        //  先判断记录的文件是否存在
+        //  如果存在，就正常执行，如果文件不存在，提示：只能开启新游戏，key = "1"
+        File file = new File(Recorder.getRecordFile());
+        if (file.exists()) {
+            if (key.equals("2")) {
+                nodes = Recorder.getNodesAndEnemyTankNumRec();
+            }
+        }else {
+            System.out.println("文件不存在, 只能开启新的游戏");
+            key = "1";
         }
 
         my_tank = new My_tank(100, 100);    //  初始化自己的坦克
@@ -125,6 +135,10 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         image1 = Toolkit.getDefaultToolkit().getImage(MyPanel.class.getResource("/bomb_1.gif"));
         image2 = Toolkit.getDefaultToolkit().getImage(MyPanel.class.getResource("/bomb_2.gif"));
         image3 = Toolkit.getDefaultToolkit().getImage(MyPanel.class.getResource("/bomb_3.gif"));
+
+        //  这里，播放指定的音乐
+        new AePlayWave("src\\111.wav").start();
+
     }
 
     //  编写方法，显示我方击毁敌方坦克的信息

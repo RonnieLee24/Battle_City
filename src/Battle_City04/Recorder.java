@@ -21,7 +21,9 @@ public class Recorder {
     //  定义输入流
     private static BufferedReader br = null;
 
-    private static String recordFile = "e:/myRecord1.txt";
+
+    //  把记录文件保存到 src 下
+    private static String recordFile = "src/myRecord1.txt";
     //  定义 Vector，指向 MyPanel 对象的 敌人坦克 Vector
     private static Vector<EnemyTank> enemyTanks = null;
 
@@ -30,6 +32,10 @@ public class Recorder {
 
     public static void setEnemyTanks(Vector<EnemyTank> enemyTanks) {
         Recorder.enemyTanks = enemyTanks;
+    }
+
+    public static String getRecordFile() {
+        return recordFile;
     }
 
     //  增加一个方法，用于读取 recordFile，恢复相关信息
